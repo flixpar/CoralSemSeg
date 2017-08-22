@@ -123,11 +123,11 @@ class pascalVOCLoader(data.Dataset):
 
         sbd_train_list = tuple(open(sbd_path + 'dataset/train.txt', 'r'))
         sbd_train_list = [id_.rstrip() for id_ in sbd_train_list]
-        
+
         self.files['train_aug'] = self.files['train'] + sbd_train_list
 
         if pre_encode:
-            print "Pre-encoding segmentation masks..."
+            print("Pre-encoding segmentation masks...")
             for i in tqdm(sbd_train_list):
                 lbl_path = sbd_path + 'dataset/cls/' + i + '.mat'
                 lbl = io.loadmat(lbl_path)['GTcls'][0]['Segmentation'][0].astype(np.int32)

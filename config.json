@@ -1,24 +1,9 @@
 {
-  "pascal":
-  {
-    "data_path": "/home/gpu_users/meetshah/segdata/pascal/VOCdevkit/VOC2012/"
-  },
-
-  "sbd":
-  {
-    "data_path": "/home/gpu_users/meetshah/segdata/pascal/benchmark_RELEASE/"
-  },
-
-  "camvid":
-  {
-    "data_path": "/Users/meet/data/CamVid/"
-  },
-  "ade20k":
-  {
-    "data_path": "/Users/meet/data/ADE20K_2016_07_26/"
-  },
-  "mit_sceneparsing_benchmark":
-  {
-    "data_path": "/home/ubuntu/DATA/ADEChallengeData2016/"
-  }
+  "pascal": {"data_path": "/home/gpu_users/meetshah/segdata/pascal/VOCdevkit/VOC2012/"},
+  "sbd": {"data_path": "/home/gpu_users/meetshah/segdata/pascal/benchmark_RELEASE/"},
+  "camvid": {"data_path": "/Users/meet/data/CamVid/"},
+  "ade20k": {"data_path": "/Users/meet/data/ADE20K_2016_07_26/"},
+  "mit_sceneparsing_benchmark": {"data_path": "/home/ubuntu/DATA/ADEChallengeData2016/"},
+  "coral": {"data_path": "/home/chei/felix/data/reef_data_v4/"},
+  "mangrove": {"data_path": "/home/ml/felix_ws/mangrove_data/"}
 }

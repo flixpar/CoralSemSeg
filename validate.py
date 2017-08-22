@@ -42,7 +42,7 @@ def validate(args):
         outputs = model(images)
         pred = np.squeeze(outputs.data.max(1)[1].cpu().numpy(), axis=1)
         gt = labels.data.cpu().numpy()
-        
+
         for gt_, pred_ in zip(gt, pred):
             gts.append(gt_)
             preds.append(pred_)
@@ -50,24 +50,24 @@ def validate(args):
     score, class_iou = scores(gts, preds, n_class=n_classes)
 
     for k, v in score.items():
-        print k, v
+        print(k, v)
 
     for i in range(n_classes):
-        print i, class_iou[i] 
+        print(i, class_iou[i])
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Hyperparams')
-    parser.add_argument('--model_path', nargs='?', type=str, default='fcn8s_pascal_1_26.pkl', 
+    parser.add_argument('--model_path', nargs='?', type=str, default='fcn8s_pascal_1_26.pkl',
                         help='Path to the saved model')
-    parser.add_argument('--dataset', nargs='?', type=str, default='pascal', 
+    parser.add_argument('--dataset', nargs='?', type=str, default='pascal',
                         help='Dataset to use [\'pascal, camvid, ade20k etc\']')
-    parser.add_argument('--img_rows', nargs='?', type=int, default=256, 
+    parser.add_argument('--img_rows', nargs='?', type=int, default=256,
                         help='Height of the input image')
-    parser.add_argument('--img_cols', nargs='?', type=int, default=256, 
+    parser.add_argument('--img_cols', nargs='?', type=int, default=256,
                         help='Height of the input image')
-    parser.add_argument('--batch_size', nargs='?', type=int, default=1, 
+    parser.add_argument('--batch_size', nargs='?', type=int, default=1,
                         help='Batch Size')
-    parser.add_argument('--split', nargs='?', type=str, default='val', 
+    parser.add_argument('--split', nargs='?', type=str, default='val',
                         help='Split of dataset to test on')
     args = parser.parse_args()
     validate(args)

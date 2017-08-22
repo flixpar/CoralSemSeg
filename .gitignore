@@ -12,6 +12,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 .DS_STORE
+.DS_Store
 .idea/
 .vscode/
 env/
@@ -30,6 +31,7 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+._*
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

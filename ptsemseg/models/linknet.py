@@ -1,16 +1,19 @@
 import torch.nn as nn
 import torchvision.models as models
 
-from utils import *
+# from utils import *
+from ptsemseg.models.utils import *
 
-Resnets = {'resnet18' :{'layers':[2, 2, 2, 2],'filters':[64, 128, 256, 512], 'block':residualBlock,'expansion':1},
+Resnets = {
+           'resnet18' :{'layers':[2, 2, 2, 2],'filters':[64, 128, 256, 512], 'block':residualBlock,'expansion':1},
            'resnet34' :{'layers':[3, 4, 6, 3],'filters':[64, 128, 256, 512], 'block':residualBlock,'expansion':1},
            'resnet50' :{'layers':[3, 4, 6, 3],'filters':[64, 128, 256, 512], 'block':residualBottleneck,'expansion':4},
            'resnet101' :{'layers':[3, 4, 23, 3],'filters':[64, 128, 256, 512], 'block':residualBottleneck,'expansion':4},
            'resnet152':{'layers':[3, 8, 36, 3],'filters':[64, 128, 256, 512], 'block':residualBottleneck,'expansion':4}
             }
 
-pretrained_models = {'resnet18':  models.resnet18(pretrained=True),
+pretrained_models = {
+          'resnet18':  models.resnet18(pretrained=True),
           'resnet34': models.resnet34(pretrained=True),
           'resnet50': models.resnet50(pretrained=True),
           'resnet101': models.resnet101(pretrained=True),

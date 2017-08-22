@@ -5,10 +5,9 @@ from ptsemseg.models.segnet import *
 from ptsemseg.models.unet import *
 from ptsemseg.models.pspnet import *
 from ptsemseg.models.linknet import *
+from ptsemseg.models.coralnet import *
 
-
-
-def get_model(name, n_classes):
+def get_model(name, n_classes, in_channels=3):
     model = _get_model_instance(name)
 
     if name in ['fcn32s', 'fcn16s', 'fcn8s']:
@@ -27,6 +26,19 @@ def get_model(name, n_classes):
                       is_batchnorm=True,
                       in_channels=3,
                       is_deconv=True)
+
+    elif name == 'linknet':
+        model = model(n_classes=n_classes,
+                      resnet='resnet50',
+                      pretrained=True,
+                      in_channels=3)
+
+    elif name == 'coralnet':
+        model = model(n_classes=n_classes,
+                     resnet='resnet101',
+                     pretrained=False,
+                     in_channels=in_channels)
+
     else:
         raise 'Model {} not available'.format(name)
 
@@ -41,4 +53,5 @@ def _get_model_instance(name):
         'segnet': segnet,
         'pspnet': pspnet,
         'linknet': linknet,
+        'coralnet': coralnet,
     }[name]

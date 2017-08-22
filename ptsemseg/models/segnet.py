@@ -1,6 +1,7 @@
 import torch.nn as nn
 
-from utils import *
+# from utils import *
+from ptsemseg.models.utils import *
 
 class segnet(nn.Module):
 

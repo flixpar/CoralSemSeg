@@ -1,6 +1,7 @@
 import torch.nn as nn
 
-from utils import *
+# from utils import *
+from ptsemseg.models.utils import *
 
 Resnets = {'resnet18' :{'layers':[2, 2, 2, 2],'filters':[64, 128, 256, 512], 'block':residualBlock,'expansion':1},
            'resnet34' :{'layers':[3, 4, 6, 3],'filters':[64, 128, 256, 512], 'block':residualBlock,'expansion':1},
