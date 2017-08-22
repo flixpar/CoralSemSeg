@@ -19,6 +19,7 @@ class MangroveLoader(data.Dataset):
 		self.root_dir = root_dir
 		self.split = split
 		self.img_size = img_size
+		self.colors = colors = [np.random.rand(3) for i in range(n_classes)]
 
 		self.image_list = self.get_image_list()
 		self.annotation_list = self.get_annotation_list()
@@ -80,3 +81,10 @@ class MangroveLoader(data.Dataset):
 	def convert(self):
 		self.data = [(img.transpose(2,0,1), mask) for img, mask in self.data]
 		self.data = [(torch.from_numpy(img).float(), torch.from_numpy(mask).long()) for img, mask in self.data]
+
+	def decode_segmap(self, im):
+		out = np.zeros((self.img_size, self.img_size, 3))
+		for i in range(self.img_size):
+			for j in range(self.img_size):
+				out[i,j] = colors[im[i,j]]
+		return out
