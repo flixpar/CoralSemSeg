@@ -17,10 +17,10 @@ from ptsemseg.metrics import scores
 from lr_scheduling import *
 
 config = dict(
-    img_size = 768,
+    img_size = 1024,
     n_epoch = 500,
-    batch_size = 2,
-    learning_rate = 1e-5, # default: 1e-5
+    batch_size = 1,
+    learning_rate = 5e-6, # default: 1e-5
     feature_scale = 1,
 )
 
@@ -47,7 +47,8 @@ def train(args):
                                      legend=['Loss']))
 
     # Setup Model
-    model = get_model("coralnet", n_classes, in_channels=n_channels)
+    # default: coralnet
+    model = get_model("segnet_mangrove", n_classes, in_channels=n_channels)
 
     if torch.cuda.is_available():
         model.cuda(0)
@@ -90,7 +91,7 @@ def train(args):
                 print("Epoch [%d/%d] Loss: %.4f" % (epoch+1, args.n_epoch, loss.data[0]))
 
         if epoch % 10 == 0:
-            torch.save(model, "training/{}_{}_{}_{}.pkl".format("mangrove", "coralnet", args.feature_scale, epoch))
+            torch.save(model, "training/{}_{}_{}_{}.pkl".format("mangrove", "segnet", args.feature_scale, epoch))
 
 class Namespace:
     def __init__(self, **kwargs):

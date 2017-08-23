@@ -22,7 +22,7 @@ args = Namespace(
 	img_size = 768,
 	batch_size = 1,
 	dataset = "mangrove",
-	model_path = "training/mangrove_coralnet_1_500.pkl",
+	model_path = "training/mangrove_coralnet_1_50.pkl",
 )
 
 def validate():

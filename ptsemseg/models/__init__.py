@@ -6,6 +6,7 @@ from ptsemseg.models.unet import *
 from ptsemseg.models.pspnet import *
 from ptsemseg.models.linknet import *
 from ptsemseg.models.coralnet import *
+from ptsemseg.models.segnet_mangrove import *
 
 def get_model(name, n_classes, in_channels=3):
     model = _get_model_instance(name)
@@ -39,6 +40,9 @@ def get_model(name, n_classes, in_channels=3):
                      pretrained=False,
                      in_channels=in_channels)
 
+    elif name == 'segnet_mangrove':
+        model = model(n_classes=n_classes, in_channels=in_channels)
+
     else:
         raise 'Model {} not available'.format(name)
 
@@ -54,4 +58,5 @@ def _get_model_instance(name):
         'pspnet': pspnet,
         'linknet': linknet,
         'coralnet': coralnet,
+        'segnet_mangrove': segnet_mangrove,
     }[name]
