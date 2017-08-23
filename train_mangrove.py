@@ -20,7 +20,7 @@ config = dict(
     img_size = 768,
     n_epoch = 500,
     batch_size = 2,
-    learning_rate = 5e-6, # default: 1e-5
+    learning_rate = 1e-5, # default: 1e-5
     feature_scale = 1,
 )
 

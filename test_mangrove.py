@@ -46,7 +46,7 @@ def test():
 	if torch.cuda.is_available():
 		model.cuda(0)
 
-	for images, labels in tqdm(valloader):
+	for i, (images, labels) in enumerate(tqdm(valloader)):
 		if torch.cuda.is_available():
 			images = Variable(images.cuda(0))
 			labels = Variable(labels.cuda(0))
@@ -58,9 +58,9 @@ def test():
 		pred = np.squeeze(outputs.data.max(1)[1].cpu().numpy(), axis=1)
 		gt = labels.data.cpu().numpy()
 
-		for i, (gt_, pred_) in enumerate(zip(gt, pred)):
-			gt_path = args.out_path + "gt{}.png".format(i)
-			pred_path = args.out_path + "pred{}.png".format(i)
+		for gt_, pred_ in zip(gt, pred):
+			gt_path = args.out_dir + "gt{}.png".format(i)
+			pred_path = args.out_dir + "pred{}.png".format(i)
 			decoded_gt = loader.decode_segmap(gt_)
 			decoded_pred = loader.decode_segmap(pred_)
 			misc.imsave(gt_path, decoded_gt)

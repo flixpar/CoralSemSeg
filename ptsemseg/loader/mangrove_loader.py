@@ -19,10 +19,12 @@ class MangroveLoader(data.Dataset):
 		self.root_dir = root_dir
 		self.split = split
 		self.img_size = img_size
-		self.colors = colors = [np.random.rand(3) for i in range(n_classes)]
+		self.colors = colors = [np.random.rand(3) for i in range(self.n_classes)]
 
 		self.image_list = self.get_image_list()
 		self.annotation_list = self.get_annotation_list()
+
+                print("{} images in loader.".format(len(self.image_list)))
 
 		self.data = self.load_data()
 		self.preprocess()
@@ -86,5 +88,5 @@ class MangroveLoader(data.Dataset):
 		out = np.zeros((self.img_size, self.img_size, 3))
 		for i in range(self.img_size):
 			for j in range(self.img_size):
-				out[i,j] = colors[im[i,j]]
+				out[i,j] = self.colors[im[i,j]]
 		return out
