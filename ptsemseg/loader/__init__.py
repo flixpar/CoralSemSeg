@@ -5,6 +5,7 @@ from ptsemseg.loader.camvid_loader import camvidLoader
 from ptsemseg.loader.ade20k_loader import ADE20KLoader
 from ptsemseg.loader.mit_sceneparsing_benchmark_loader import MITSceneParsingBenchmarkLoader
 from ptsemseg.loader.coral_loader import CoralLoader
+from ptsemseg.loader.coral_depth_loader import CoralDepthLoader
 from ptsemseg.loader.mangrove_loader import MangroveLoader
 
 def get_loader(name):
@@ -17,7 +18,8 @@ def get_loader(name):
         'camvid': camvidLoader,
         'ade20k': ADE20KLoader,
         'mit_sceneparsing_benchmark': MITSceneParsingBenchmarkLoader,
-		'coral': CoralLoader,
+        'coral': CoralLoader,
+        'coral_depth': CoralDepthLoader,
         'mangrove': MangroveLoader
     }[name]
 

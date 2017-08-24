@@ -5,5 +5,6 @@
   "ade20k": {"data_path": "/Users/meet/data/ADE20K_2016_07_26/"},
   "mit_sceneparsing_benchmark": {"data_path": "/home/ubuntu/DATA/ADEChallengeData2016/"},
   "coral": {"data_path": "/home/chei/felix/data/reef_data_v4/"},
+  "coral_depth": {"data_path": "/home/chei/felix/data/reef_data_v5/processed/"},
   "mangrove": {"data_path": "/home/ml/felix_ws/mangrove_data/"}
 }

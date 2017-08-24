@@ -9,7 +9,7 @@ import glob
 import torch
 from torch.utils import data
 
-class CoralLoader(data.Dataset):
+class CoralDepthLoader(data.Dataset):
 
 	n_classes = 9
 	n_channels = 4
