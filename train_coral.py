@@ -53,7 +53,6 @@ def train(args):
     model = get_model("coralnet", n_classes, in_channels=n_channels)
 
     if torch.cuda.is_available():
-        print("Setup...")
         model.cuda(0)
         test_image, test_segmap = loader[0]
         test_image = Variable(test_image.unsqueeze(0).cuda(0))
@@ -69,7 +68,6 @@ def train(args):
     for epoch in range(args.n_epoch):
         print("Starting epoch {}".format(epoch))
         for i, (images, labels) in enumerate(trainloader):
-            print("image {}".format(i))
             if torch.cuda.is_available():
                 images = Variable(images.cuda(0))
                 labels = Variable(labels.cuda(0))
@@ -77,18 +75,14 @@ def train(args):
                 images = Variable(images)
                 labels = Variable(labels)
 
-            print("scheduler")
             iter = len(trainloader)*epoch + i
             poly_lr_scheduler(optimizer, args.learning_rate, iter)
 
-            print("run")
             optimizer.zero_grad()
             outputs = model(images)
 
-            print("get loss")
             loss = cross_entropy2d(outputs, labels)
 
-            print("train")
             loss.backward()
             optimizer.step()
 
@@ -102,13 +96,7 @@ def train(args):
                 print("Epoch [%d/%d] Loss: %.4f" % (epoch+1, args.n_epoch, loss.data[0]))
                 torch.save(model, "{}_{}_{}_{}.pkl".format("training/coralnet", "coral", args.feature_scale, epoch))
 
-        # test_output = model(test_image)
-        # predicted = loader.decode_segmap(test_output[0].cpu().data.numpy().argmax(0))
-        # target = loader.decode_segmap(test_segmap.numpy())
 
-        # vis.image(test_image[0].cpu().data.numpy(), opts=dict(title='Input' + str(epoch)))
-        # vis.image(np.transpose(target, [2,0,1]), opts=dict(title='GT' + str(epoch)))
-        # vis.image(np.transpose(predicted, [2,0,1]), opts=dict(title='Predicted' + str(epoch)))
 
 class Namespace:
     def __init__(self, **kwargs):

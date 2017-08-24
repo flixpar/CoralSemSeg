@@ -28,23 +28,15 @@ class CoralLoader(data.Dataset):
 		print("{} images in loader.".format(self.__len__()))
 
 	def __getitem__(self, index):
-		print("Reading...")
 		img = cv2.imread(self.image_list[index])
 		mask = cv2.imread(self.annotation_list[index], 0)
 		
-		print("Downsampling...")
 		img, mask = self.downsample(img, mask)
 
-		print("Whitening...")
 		img = self.addWhitenedChannel(img.copy())
-		print("Preprocessing...")
 		img = self.preprocess(img)
 
-		print("Converting...")
 		img, mask = self.convert(img, mask)
-
-		print("Done with image")
-
 		return img, mask
 
 	def __len__(self):
@@ -77,9 +69,7 @@ class CoralLoader(data.Dataset):
 		return img, mask
 
 	def convert(self, img, mask):
-		print("transposing...")
 		img = img.transpose(2, 0, 1)
-		print("converting to torch...")
 		img = torch.from_numpy(img).float()
 		mask = torch.from_numpy(mask).long()
 		return img, mask
@@ -92,14 +82,10 @@ class CoralLoader(data.Dataset):
 		return out
 
 	def addWhitenedChannel(self, img):
-		print("convert color")
 		# gray = cv2.cvtColor(img.copy(), cv2.COLOR_BGR2GRAY)
 		gray = np.average(img, weights=[0.114, 0.587, 0.299], axis=2)
-		print("make whitening matrix")
 		zca_matrix = zca_whitening_matrix(gray)
-		print("apply whitening matrix")
 		zca_img = np.dot(zca_matrix, gray)
-		print("add whitened to image")
 		zca_img = zca_img.reshape((zca_img.shape[0], zca_img.shape[1], 1))
 		out = np.concatenate((img, zca_img), axis=2)
 		return out
@@ -115,9 +101,7 @@ def zca_whitening_matrix(X):
 	# Covariance matrix [column-wise variables]: Sigma = (X-mu)' * (X-mu) / N
 	sigma = np.cov(X, rowvar=True) # [M x M]
 	# Singular Value Decomposition. X = U * np.diag(S) * V
-	print("doing svd...")
 	U,S,V = np.linalg.svd(sigma)
-	print("done with svd")
 		# U: [M x M] eigenvectors of sigma.
 		# S: [M x 1] eigenvalues of sigma.
 		# V: [M x M] transpose of U
