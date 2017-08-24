@@ -66,7 +66,7 @@ def train(args):
 
     print("Starting training...")
     for epoch in range(args.n_epoch):
-        print("Starting epoch {}".format(epoch))
+        print("Starting epoch {}".format(epoch+1))
         for i, (images, labels) in enumerate(trainloader):
             if torch.cuda.is_available():
                 images = Variable(images.cuda(0))
