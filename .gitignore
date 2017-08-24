@@ -9,6 +9,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Backups:
+*.bak
+
 # Torch Models
 *.pkl
 

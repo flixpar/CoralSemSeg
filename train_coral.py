@@ -17,7 +17,7 @@ from ptsemseg.metrics import scores
 from lr_scheduling import *
 
 config = dict(
-    img_size = 600,
+    img_size = 768,
     n_epoch = 100,
     batch_size = 2,
     learning_rate = 1e-5,
@@ -27,6 +27,7 @@ config = dict(
 def train(args):
 
     # Setup Dataloader
+    print("Setting up dataloader...")
     data_loader = get_loader("coral")
     data_path = get_data_path("coral")
     loader = data_loader(data_path, img_size=args.img_size)
@@ -34,7 +35,8 @@ def train(args):
     n_classes = loader.n_classes
     n_channels = loader.n_channels
 
-    trainloader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=4, shuffle=True)
+    trainloader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=8, shuffle=True)
+    print("Finished creating dataloader.")
 
     # Setup visdom for visualization
     vis = visdom.Visdom()
@@ -47,9 +49,11 @@ def train(args):
                                      legend=['Loss']))
 
     # Setup Model
+    print("Setting up model...")
     model = get_model("coralnet", n_classes, in_channels=n_channels)
 
     if torch.cuda.is_available():
+        print("Setup...")
         model.cuda(0)
         test_image, test_segmap = loader[0]
         test_image = Variable(test_image.unsqueeze(0).cuda(0))
@@ -58,10 +62,14 @@ def train(args):
         test_image, test_segmap = loader[0]
         test_image = Variable(test_image.unsqueeze(0))
 
+    print("Setting up optimizer...")
     optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.99, weight_decay=5e-4)
 
+    print("Starting training...")
     for epoch in range(args.n_epoch):
+        print("Starting epoch {}".format(epoch))
         for i, (images, labels) in enumerate(trainloader):
+            print("image {}".format(i))
             if torch.cuda.is_available():
                 images = Variable(images.cuda(0))
                 labels = Variable(labels.cuda(0))
@@ -69,14 +77,18 @@ def train(args):
                 images = Variable(images)
                 labels = Variable(labels)
 
+            print("scheduler")
             iter = len(trainloader)*epoch + i
             poly_lr_scheduler(optimizer, args.learning_rate, iter)
 
+            print("run")
             optimizer.zero_grad()
             outputs = model(images)
 
+            print("get loss")
             loss = cross_entropy2d(outputs, labels)
 
+            print("train")
             loss.backward()
             optimizer.step()
 
@@ -88,6 +100,7 @@ def train(args):
 
             if (i+1) % 20 == 0:
                 print("Epoch [%d/%d] Loss: %.4f" % (epoch+1, args.n_epoch, loss.data[0]))
+                torch.save(model, "{}_{}_{}_{}.pkl".format("training/coralnet", "coral", args.feature_scale, epoch))
 
         # test_output = model(test_image)
         # predicted = loader.decode_segmap(test_output[0].cpu().data.numpy().argmax(0))
@@ -96,8 +109,6 @@ def train(args):
         # vis.image(test_image[0].cpu().data.numpy(), opts=dict(title='Input' + str(epoch)))
         # vis.image(np.transpose(target, [2,0,1]), opts=dict(title='GT' + str(epoch)))
         # vis.image(np.transpose(predicted, [2,0,1]), opts=dict(title='Predicted' + str(epoch)))
-
-        torch.save(model, "{}_{}_{}_{}.pkl".format("coralnet", "coral", args.feature_scale, epoch))
 
 class Namespace:
     def __init__(self, **kwargs):

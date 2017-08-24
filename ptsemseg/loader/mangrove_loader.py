@@ -24,7 +24,7 @@ class MangroveLoader(data.Dataset):
 		self.image_list = self.get_image_list()
 		self.annotation_list = self.get_annotation_list()
 
-                print("{} images in loader.".format(len(self.image_list)))
+		print("{} images in loader.".format(len(self.image_list)))
 
 		self.data = self.load_data()
 		self.preprocess()

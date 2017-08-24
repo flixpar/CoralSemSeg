@@ -1,37 +1,54 @@
 import cv2
+import tifffile as tiff
 import numpy as np
+import scipy.misc as misc
 
 import os
 import glob
 
+import torch
 from torch.utils import data
 
 class CoralLoader(data.Dataset):
 
 	n_classes = 9
 	n_channels = 4
-	MEAN_PIX = np.array([135.18068, 148.34402, 101.72406, 101.72406])
+	MEAN_PIX = np.array([135.18068, 148.34402, 101.72406, 124.72406])
 
 	def __init__(self, root_dir, split="training", img_size=800):
 
 		self.root_dir = root_dir
 		self.split = split
 		self.img_size = img_size
+		self.colors = colors = [np.random.rand(3) for i in range(self.n_classes)]
 
 		self.image_list = self.get_image_list()
 		self.annotation_list = self.get_annotation_list()
 
-		self.data = self.load_data()
-		self.preprocess()
-		self.downsample()
-
-		self.add_channel()
+		print("{} images in loader.".format(self.__len__()))
 
 	def __getitem__(self, index):
-		return self.data[index]
+		print("Reading...")
+		img = cv2.imread(self.image_list[index])
+		mask = cv2.imread(self.annotation_list[index], 0)
+		
+		print("Downsampling...")
+		img, mask = self.downsample(img, mask)
+
+		print("Whitening...")
+		img = self.addWhitenedChannel(img.copy())
+		print("Preprocessing...")
+		img = self.preprocess(img)
+
+		print("Converting...")
+		img, mask = self.convert(img, mask)
+
+		print("Done with image")
+
+		return img, mask
 
 	def __len__(self):
-		return len(self.data)
+		return len(self.image_list)
 
 	## Helpers:
 
@@ -45,41 +62,67 @@ class CoralLoader(data.Dataset):
 		filelist = glob.glob(annotation_fn_pattern)
 		return sorted(filelist)
 
-	def load_data(self):
-		images = []
-		annotations = []
+	def preprocess(self, img):
+		img = img.astype(np.float32)
+		img -= self.MEAN_PIX
+		img -= img.min(axis=(0,1))
+		img /= img.max(axis=(0,1))
+		return img
 
-		# load images:
-		for fn in self.image_list:
-			img = cv2.imread(fn)
-			images.append(img)
+	def downsample(self, img, mask):
+		# img = cv2.resize(img, (self.img_size, self.img_size), cv2.INTER_LANCZOS4)
+		# mask = cv2.resize(mask, (self.img_size, self.img_size), cv2.INTER_NEAREST)
+		img = misc.imresize(img, (self.img_size, self.img_size), 'lanczos')
+		mask = misc.imresize(mask, (self.img_size, self.img_size), 'nearest')
+		return img, mask
 
-		# load annotations:
-		for fn in self.annotation_list:
-			img = cv2.imread(fn, 0)
-			annotations.append(img)
+	def convert(self, img, mask):
+		print("transposing...")
+		img = img.transpose(2, 0, 1)
+		print("converting to torch...")
+		img = torch.from_numpy(img).float()
+		mask = torch.from_numpy(mask).long()
+		return img, mask
 
-		return list(zip(images, annotations))
+	def decode_segmap(self, im):
+		out = np.zeros((self.img_size, self.img_size, 3))
+		for i in range(self.img_size):
+			for j in range(self.img_size):
+				out[i,j] = self.colors[im[i,j]]
+		return out
 
-	def preprocess(self):
+	def addWhitenedChannel(self, img):
+		print("convert color")
+		# gray = cv2.cvtColor(img.copy(), cv2.COLOR_BGR2GRAY)
+		gray = np.average(img, weights=[0.114, 0.587, 0.299], axis=2)
+		print("make whitening matrix")
+		zca_matrix = zca_whitening_matrix(gray)
+		print("apply whitening matrix")
+		zca_img = np.dot(zca_matrix, gray)
+		print("add whitened to image")
+		zca_img = zca_img.reshape((zca_img.shape[0], zca_img.shape[1], 1))
+		out = np.concatenate((img, zca_img), axis=2)
+		return out
 
-		for img, _ in self.data:
-			img = img.astype(np.float32)
-			print(img.shape)
-			img -= self.MEAN_PIX
-			print(img.shape)
-			img -= img.min(axis=2)
-			print(img.shape)
-			img /= img.max(axis=2)
-			print(img.shape)
-
-	def downsample(self):
-
-		for img, mask in self.data:
-			img = cv2.resize(img, (self.img_size, self.img_size), cv2.INTER_LANCZOS4)
-			mask = cv2.resize(mask, (self.img_size, self.img_size), cv2.INTER_NEAREST)
-
-	def add_channel(self):
-
-		for img, _ in self.data:
-			img = np.append(img, img[:,:,2], axis=2)
+def zca_whitening_matrix(X):
+	"""
+	Function to compute ZCA whitening matrix (aka Mahalanobis whitening).
+	INPUT:  X: [M x N] matrix.
+		Rows: Variables
+		Columns: Observations
+	OUTPUT: ZCAMatrix: [M x M] matrix
+	"""
+	# Covariance matrix [column-wise variables]: Sigma = (X-mu)' * (X-mu) / N
+	sigma = np.cov(X, rowvar=True) # [M x M]
+	# Singular Value Decomposition. X = U * np.diag(S) * V
+	print("doing svd...")
+	U,S,V = np.linalg.svd(sigma)
+	print("done with svd")
+		# U: [M x M] eigenvectors of sigma.
+		# S: [M x 1] eigenvalues of sigma.
+		# V: [M x M] transpose of U
+	# Whitening constant: prevents division by zero
+	epsilon = 1e-5
+	# ZCA Whitening matrix: U * Lambda * U'
+	ZCAMatrix = np.dot(U, np.dot(np.diag(1.0/np.sqrt(S + epsilon)), U.T)) # [M x M]
+	return ZCAMatrix
