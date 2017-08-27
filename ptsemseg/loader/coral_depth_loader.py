@@ -13,7 +13,7 @@ class CoralDepthLoader(data.Dataset):
 
 	n_classes = 9
 	n_channels = 4
-	MEAN_PIX = np.array([135.18068, 148.34402, 101.72406, 124.72406])
+	MEAN_PIX = np.array([135.18068, 148.34402, 101.72406, 30.0])
 
 	def __init__(self, root_dir, split="training", img_size=800):
 
@@ -27,11 +27,14 @@ class CoralDepthLoader(data.Dataset):
 		self.depthimage_list = self.get_depthimage_list()
 
 		print("{} images in loader.".format(self.__len__()))
+		assert(len(self.image_list) == len(self.annotation_list))
+		assert(len(self.image_list) == len(self.depthimage_list))
 
 	def __getitem__(self, index):
 		img = cv2.imread(self.image_list[index])
 		mask = cv2.imread(self.annotation_list[index], 0)
 		depth = cv2.imread(self.depthimage_list[index], 0)
+		# print(np.mean(depth))
 
 		img, mask, depth = self.downsample(img, mask, depth)
 
@@ -48,7 +51,7 @@ class CoralDepthLoader(data.Dataset):
 	## Helpers:
 
 	def get_image_list(self):
-		image_fn_pattern = os.path.join(self.root_dir, self.split, "images", "*.jpg")
+		image_fn_pattern = os.path.join(self.root_dir, self.split, "images", "*.png")
 		filelist = glob.glob(image_fn_pattern)
 		return sorted(filelist)
 
@@ -65,8 +68,8 @@ class CoralDepthLoader(data.Dataset):
 	def preprocess(self, img):
 		img = img.astype(np.float32)
 		img -= self.MEAN_PIX
-		img -= img.min(axis=(0,1))
-		img /= img.max(axis=(0,1))
+		# img -= img.min(axis=(0,1))
+		# img /= img.max(axis=(0,1))
 		return img
 
 	def downsample(self, img, mask, depth):
@@ -101,7 +104,7 @@ class CoralDepthLoader(data.Dataset):
 
 	def addDepth(self, img, depth):
 		depth = depth.reshape((depth.shape[0], depth.shape[1], 1))
-		out = np.concetenate((img, depth), axis=2)
+		out = np.concatenate((img, depth), axis=2)
 		return out
 
 def zca_whitening_matrix(X):

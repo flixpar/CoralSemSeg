@@ -21,9 +21,9 @@ class Namespace:
 args = Namespace(
 	img_size = 768,
 	batch_size = 1,
-	dataset = "coral",
-	split = "validation",
-	model_path = "training/coralnet_coral_1_40.pkl",
+	dataset = "coral_depth",
+	split = "training",
+	model_path = "training/coralnet_coral_depth_1_299.pkl",
 	num_samples = 120,
 )
 
@@ -38,8 +38,6 @@ def validate():
 	n_channels = loader.n_channels
 
 	valloader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=4, shuffle=True)
-
-	print("Validating on {} images".format(args.num_samples))
 
 	# Setup Model
 	model = torch.load(args.model_path)
