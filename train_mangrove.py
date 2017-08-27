@@ -48,7 +48,7 @@ def train(args):
 
     # Setup Model
     # default: coralnet
-    model = get_model("segnet_mangrove", n_classes, in_channels=n_channels)
+    model = get_model("coralnet", n_classes, in_channels=n_channels)
 
     if torch.cuda.is_available():
         model.cuda(0)
@@ -59,7 +59,8 @@ def train(args):
         test_image, test_segmap = loader[0]
         test_image = Variable(test_image.unsqueeze(0))
 
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.99, weight_decay=5e-4)
+    # optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.99, weight_decay=5e-4)
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate)
 
     for epoch in range(args.n_epoch+1):
         for i, (images, labels) in enumerate(trainloader):
@@ -71,7 +72,7 @@ def train(args):
                 labels = Variable(labels)
 
             iter = len(trainloader)*epoch + i
-            poly_lr_scheduler(optimizer, args.learning_rate, iter)
+            # poly_lr_scheduler(optimizer, args.learning_rate, iter)
 
             optimizer.zero_grad()
             outputs = model(images)
@@ -90,8 +91,8 @@ def train(args):
             if (i+1) % 20 == 0:
                 print("Epoch [%d/%d] Loss: %.4f" % (epoch+1, args.n_epoch, loss.data[0]))
 
-        if epoch % 10 == 0:
-            torch.save(model, "training/{}_{}_{}_{}.pkl".format("mangrove", "segnet", args.feature_scale, epoch))
+        if epoch % 50 == 0:
+            torch.save(model, "training/{}_{}_{}_{}.pkl".format("mangrove_multi", "linknet", args.feature_scale, epoch+1))
 
 class Namespace:
     def __init__(self, **kwargs):
