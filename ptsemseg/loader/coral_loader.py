@@ -3,6 +3,8 @@ import tifffile as tiff
 import numpy as np
 import scipy.misc as misc
 
+import matplotlib.pyplot as plt
+
 import os
 import glob
 
@@ -30,11 +32,27 @@ class CoralLoader(data.Dataset):
 	def __getitem__(self, index):
 		img = cv2.imread(self.image_list[index])
 		mask = cv2.imread(self.annotation_list[index], 0)
-		
+
 		img, mask = self.downsample(img, mask)
 
+		plt.imshow(img)
+		plt.show()
+
 		img = self.addWhitenedChannel(img.copy())
+
+		plt.imshow(img[:,:,3])
+		plt.show()
+
 		img = self.preprocess(img)
+
+		print(img[:,:,0].min())
+		print(img[:,:,0].min())
+		print(img[:,:,1].min())
+		print(img[:,:,1].min())
+		print(img[:,:,2].max())
+		print(img[:,:,2].max())
+		print(img[:,:,3].max())
+		print(img[:,:,3].max())
 
 		img, mask = self.convert(img, mask)
 		return img, mask
