@@ -7,6 +7,7 @@ from ptsemseg.loader.mit_sceneparsing_benchmark_loader import MITSceneParsingBen
 from ptsemseg.loader.coral_loader import CoralLoader
 from ptsemseg.loader.coral_depth_loader import CoralDepthLoader
 from ptsemseg.loader.mangrove_loader import MangroveLoader
+from ptsemseg.loader.mangrove_rgb_loader import MangroveRGBLoader
 
 def get_loader(name):
     """get_loader
@@ -20,7 +21,8 @@ def get_loader(name):
         'mit_sceneparsing_benchmark': MITSceneParsingBenchmarkLoader,
         'coral': CoralLoader,
         'coral_depth': CoralDepthLoader,
-        'mangrove': MangroveLoader
+        'mangrove': MangroveLoader,
+        'mangrove_rgb': MangroveRGBLoader
     }[name]
 
 

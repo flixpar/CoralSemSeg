@@ -21,8 +21,9 @@ class Namespace:
 args = Namespace(
 	img_size = 768,
 	batch_size = 1,
-	dataset = "mangrove",
-	model_path = "training/mangrove_coralnet_1_50.pkl",
+	dataset = "mangrove_rgb",
+	model_path = "training/mangrove_linknet_1_499.pkl",
+	max_samples = 100,
 )
 
 def validate():
@@ -45,7 +46,9 @@ def validate():
 		model.cuda(0)
 
 	gts, preds = [], []
-	for images, labels in tqdm(valloader):
+	for i, (images, labels) in tqdm(enumerate(valloader)):
+		if i >= args.max_samples:
+			break
 		if torch.cuda.is_available():
 			images = Variable(images.cuda(0))
 			labels = Variable(labels.cuda(0))
@@ -54,8 +57,9 @@ def validate():
 			labels = Variable(labels)
 
 		outputs = model(images)
-		pred = np.squeeze(outputs.data.max(1)[1].cpu().numpy(), axis=1)
-		gt = labels.data.cpu().numpy()
+
+		pred = np.squeeze((torch.max(outputs.data, 1, keepdim=True))[1].cpu().numpy())
+		gt = np.squeeze(labels.data.cpu().numpy())
 
 		for gt_, pred_ in zip(gt, pred):
 			gts.append(gt_)
