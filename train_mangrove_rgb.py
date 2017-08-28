@@ -20,8 +20,9 @@ config = dict(
     img_size = 768,
     n_epoch = 500,
     batch_size = 2,
-    learning_rate = 5e-6, # default: 1e-5
+    learning_rate = 2e-6, # default: 1e-5
     feature_scale = 1,
+    version = 2,
 )
 
 def train(args):
@@ -72,7 +73,7 @@ def train(args):
                 labels = Variable(labels)
 
             iter = len(trainloader)*epoch + i
-            poly_lr_scheduler(optimizer, args.learning_rate, iter)
+            # poly_lr_scheduler(optimizer, args.learning_rate, iter)
 
             optimizer.zero_grad()
             outputs = model(images)
@@ -92,7 +93,7 @@ def train(args):
                 print("Epoch [%d/%d] Loss: %.4f" % (epoch+1, args.n_epoch, loss.data[0]))
 
         if (epoch+1) % 50 == 0:
-            torch.save(model, "training/{}_{}_{}_{}.pkl".format("mangrove", "linknet", args.feature_scale, epoch))
+            torch.save(model, "training/{}_{}_{}_{}.pkl".format("mangrove", "linknet", args.version, epoch+1))
 
 class Namespace:
     def __init__(self, **kwargs):

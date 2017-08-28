@@ -18,7 +18,7 @@ from lr_scheduling import *
 
 config = dict(
     img_size = 1024,
-    n_epoch = 500,
+    n_epoch = 300,
     batch_size = 1,
     learning_rate = 5e-6, # default: 1e-5
     feature_scale = 1,
