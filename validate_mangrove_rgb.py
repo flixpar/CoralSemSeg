@@ -19,10 +19,10 @@ class Namespace:
 		self.__dict__.update(kwargs)
 
 args = Namespace(
-	img_size = 768,
+	img_size = 1024,
 	batch_size = 1,
 	dataset = "mangrove_rgb",
-	model_path = "training/mangrove_linknet_1_499.pkl",
+	model_path = "training/mangrove_linknet_2_500.pkl",
 	max_samples = 100,
 )
 

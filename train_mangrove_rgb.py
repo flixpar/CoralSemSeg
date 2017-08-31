@@ -17,7 +17,7 @@ from ptsemseg.metrics import scores
 from lr_scheduling import *
 
 config = dict(
-    img_size = 768,
+    img_size = 1024,
     n_epoch = 500,
     batch_size = 2,
     learning_rate = 2e-6, # default: 1e-5
@@ -50,6 +50,7 @@ def train(args):
     # Setup Model
     # default: coralnet
     model = get_model("linknet", n_classes, in_channels=n_channels)
+    # model = nn.DataParallel(model)
 
     if torch.cuda.is_available():
         model.cuda(0)
